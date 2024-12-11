@@ -3,7 +3,7 @@ services:
   mysql:
     image: mysql:5.7
     environment:
-      MYSQL_DATABASE: eventsProject
+      MYSQL_DATABASE: eventsproject
       MYSQL_ROOT_PASSWORD: password
     ports:
       - "3306:3306"
@@ -12,7 +12,7 @@ services:
     ports:
       - "8089:8089"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eventsProject
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eventsproject
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
