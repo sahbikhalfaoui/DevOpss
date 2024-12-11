@@ -59,7 +59,7 @@ class EventServicesImplTest {
         event.setLogistics(new HashSet<>());
 
         logistics = new Logistics();
-        logistics.setId(1);
+        logistics.setIdLog(1); // Corrected setter
         logistics.setReserve(true);
         logistics.setPrixUnit(100f);
         logistics.setQuantite(5);
@@ -107,7 +107,7 @@ class EventServicesImplTest {
         participant2.setIdPart(2);
         participant2.setNom("Smith");
         participant2.setPrenom("Anna");
-        participant2.setTache(Tache.GUEST);
+        participant2.setTache(Tache.INVITE); // Changed from GUEST to INVITE
         participant2.setEvents(new HashSet<>());
 
         event.setParticipants(new HashSet<>(Arrays.asList(participant, participant2)));
@@ -134,7 +134,7 @@ class EventServicesImplTest {
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
         Logistics newLogistics = new Logistics();
-        newLogistics.setId(2);
+        newLogistics.setIdLog(2); // Corrected setter
         newLogistics.setReserve(true);
         newLogistics.setPrixUnit(200f);
         newLogistics.setQuantite(3);
@@ -156,7 +156,7 @@ class EventServicesImplTest {
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
         Logistics newLogistics = new Logistics();
-        newLogistics.setId(2);
+        newLogistics.setIdLog(2); // Corrected setter
         newLogistics.setReserve(true);
         newLogistics.setPrixUnit(200f);
         newLogistics.setQuantite(3);
@@ -205,7 +205,7 @@ class EventServicesImplTest {
         participantAhmed.setIdPart(2);
         participantAhmed.setNom("Tounsi");
         participantAhmed.setPrenom("Ahmed");
-        participantAhmed.setTache(Tache.ORGANISATEUR);
+        participantAhmed.setTache(Tache.ORGANISATEUR); // Changed from GUEST
         participantAhmed.setEvents(new HashSet<>());
 
         // Setup events
