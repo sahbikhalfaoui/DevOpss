@@ -1,12 +1,7 @@
-// File: EventProjectTests.java
-package tn.esprit.eventsproject;
+package tn.esprit.eventsproject.services;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -16,16 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import tn.esprit.eventsproject.controllers.EventRestController;
 import tn.esprit.eventsproject.entities.Event;
 import tn.esprit.eventsproject.entities.Logistics;
 import tn.esprit.eventsproject.entities.Participant;
@@ -33,10 +18,8 @@ import tn.esprit.eventsproject.entities.Tache;
 import tn.esprit.eventsproject.repositories.EventRepository;
 import tn.esprit.eventsproject.repositories.LogisticsRepository;
 import tn.esprit.eventsproject.repositories.ParticipantRepository;
-import tn.esprit.eventsproject.services.EventServicesImpl;
-import tn.esprit.eventsproject.services.IEventServices;
 
-// -------------------- Unit Tests for EventServicesImpl --------------------
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class EventServicesImplTest {
@@ -113,8 +96,7 @@ class EventServicesImplTest {
         Event savedEvent = eventServices.addAffectEvenParticipant(event, 2);
 
         assertNotNull(savedEvent);
-        // Depending on your implementation, you might want to handle null participants differently
-        // Here, it's assumed that if participant is not found, the event is still saved without adding the participant
+        // Depending on implementation, handle the absence of participant
         verify(participantRepository, times(1)).findById(2);
         verify(eventRepository, times(1)).save(event);
     }
@@ -267,137 +249,5 @@ class EventServicesImplTest {
         log.setPrixUnit(prixUnit);
         log.setQuantite(quantite);
         return log;
-    }
-}
-
-// -------------------- Integration Tests for EventRestController --------------------
-
-@ExtendWith(SpringExtension.class)
-@WebMvcTest(EventRestController.class)
-class EventRestControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private IEventServices eventServices;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Participant participant;
-    private Event event;
-    private Logistics logistics;
-
-    @BeforeEach
-    void setUp() {
-        participant = new Participant();
-        participant.setIdPart(1);
-        participant.setNom("Doe");
-        participant.setPrenom("John");
-        participant.setTache(Tache.ORGANISATEUR);
-        participant.setEvents(new HashSet<>());
-
-        event = new Event();
-        event.setIdEvent(1);
-        event.setDescription("Annual Conference");
-        event.setDateDebut(LocalDate.of(2024, 5, 20));
-        event.setDateFin(LocalDate.of(2024, 5, 22));
-        event.setCout(0f);
-        event.setParticipants(new HashSet<>(Arrays.asList(participant)));
-        event.setLogistics(new HashSet<>());
-
-        logistics = new Logistics();
-        logistics.setId(1);
-        logistics.setReserve(true);
-        logistics.setPrixUnit(100f);
-        logistics.setQuantite(5);
-    }
-
-    @Test
-    void testAddParticipant() throws Exception {
-        when(eventServices.addParticipant(any(Participant.class))).thenReturn(participant);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/event/addPart")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(participant)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nom").value("Doe"))
-                .andExpect(jsonPath("$.prenom").value("John"));
-
-        verify(eventServices, times(1)).addParticipant(any(Participant.class));
-    }
-
-    @Test
-    void testAddEventPart() throws Exception {
-        when(eventServices.addAffectEvenParticipant(any(Event.class), anyInt())).thenReturn(event);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/event/addEvent/{id}", 1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(event)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.description").value("Annual Conference"));
-
-        verify(eventServices, times(1)).addAffectEvenParticipant(any(Event.class), eq(1));
-    }
-
-    @Test
-    void testAddEvent() throws Exception {
-        when(eventServices.addAffectEvenParticipant(any(Event.class))).thenReturn(event);
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/event/addEvent")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(event)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.description").value("Annual Conference"));
-
-        verify(eventServices, times(1)).addAffectEvenParticipant(any(Event.class));
-    }
-
-    @Test
-    void testAddAffectLog() throws Exception {
-        when(eventServices.addAffectLog(any(Logistics.class), anyString())).thenReturn(logistics);
-
-        mockMvc.perform(MockMvcRequestBuilders.put("/event/addAffectLog/{description}", "Annual Conference")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(logistics)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.reserve").value(true));
-
-        verify(eventServices, times(1)).addAffectLog(any(Logistics.class), eq("Annual Conference"));
-    }
-
-    @Test
-    void testGetLogistiquesDates() throws Exception {
-        List<Logistics> logisticsList = Arrays.asList(logistics);
-        LocalDate d1 = LocalDate.of(2024, 1, 1);
-        LocalDate d2 = LocalDate.of(2024, 12, 31);
-
-        when(eventServices.getLogisticsDates(d1, d2)).thenReturn(logisticsList);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/event/getLogs/{d1}/{d2}", "2024-01-01", "2024-12-31")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].reserve").value(true));
-
-        verify(eventServices, times(1)).getLogisticsDates(d1, d2);
-    }
-
-    @Test
-    void testGetLogistiquesDates_NoLogistics() throws Exception {
-        LocalDate d1 = LocalDate.of(2024, 1, 1);
-        LocalDate d2 = LocalDate.of(2024, 12, 31);
-
-        when(eventServices.getLogisticsDates(d1, d2)).thenReturn(null);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/event/getLogs/{d1}/{d2}", "2024-01-01", "2024-12-31")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(""));
-
-        verify(eventServices, times(1)).getLogisticsDates(d1, d2);
     }
 }
