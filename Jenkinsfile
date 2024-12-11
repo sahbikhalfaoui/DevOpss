@@ -12,20 +12,7 @@ pipeline {
         sh 'mvn clean package -DskipTests'
       }
     }
-    stage('Deploy To Nexus') {
-      steps {
-        echo 'Deploying to Nexus'
-        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
-          sh """
-            mvn deploy \
-              -Dnexus.username=${NEXUS_USER} \
-              -Dnexus.password=${NEXUS_PASS} \
-              -DskipTests
-          """
-        }
-      }
-    }
-
+   
     stage('Unit Tests') {
       steps {
         echo 'Running Unit Tests with Coverage'
@@ -49,6 +36,19 @@ pipeline {
         """
       }
     }
+    stage('Deploy To Nexus') {
+      steps {
+        echo 'Deploying to Nexus'
+        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+          sh """
+            mvn deploy \
+              -Dnexus.username=${NEXUS_USER} \
+              -Dnexus.password=${NEXUS_PASS} \
+              -DskipTests
+          """
+        }
+      }
+    }
 
     stage('Build Docker Image') {
       steps {
@@ -65,10 +65,4 @@ pipeline {
     }
   } // Closing brace for 'stages'
   
-  post {
-    always {
-      echo 'Pipeline completed.'
-      // Add any additional post actions if necessary
-    }
-  }
 } // Closing brace for 'pipeline'
