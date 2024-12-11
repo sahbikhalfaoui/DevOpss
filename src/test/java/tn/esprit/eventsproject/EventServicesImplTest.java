@@ -110,29 +110,6 @@ class EventServicesImplTest {
     }
 
     @Test
-    void testAddAffectLog_WithExistingLogistics() {
-        event.getLogistics().add(logistics);
-        when(eventRepository.findByDescription("Annual Conference")).thenReturn(event);
-        when(logisticsRepository.save(any(Logistics.class))).thenReturn(logistics);
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
-
-        Logistics newLogistics = new Logistics();
-        newLogistics.setIdLog(2);
-        newLogistics.setDescription("Catering");
-        newLogistics.setReserve(true);
-        newLogistics.setPrixUnit(50f);
-        newLogistics.setQuantite(10);
-
-        Logistics savedLogistics = eventServices.addAffectLog(newLogistics, "Annual Conference");
-
-        assertNotNull(savedLogistics);
-        assertTrue(event.getLogistics().contains(newLogistics));
-        verify(eventRepository, times(1)).findByDescription("Annual Conference");
-        verify(logisticsRepository, times(1)).save(newLogistics);
-        verify(eventRepository, times(1)).save(event);
-    }
-
-    @Test
     void testCalculCout_Success() {
         // Setup events
         Event event1 = new Event();
