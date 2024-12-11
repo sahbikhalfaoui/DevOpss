@@ -40,14 +40,14 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         echo 'Building Docker Image'
-        sh 'sudo docker build -t eventsProject .'
+        sh 'docker build -t eventsProject .'
       }
     }
 
     stage('Start Docker Compose') {
       steps {
         echo 'Starting Docker Compose for Integration Tests'
-        sh 'sudo docker compose up -d'
+        sh 'docker compose up -d'
       }
     }
   } // Closing brace for 'stages'
