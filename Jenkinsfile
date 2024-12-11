@@ -63,6 +63,6 @@ pipeline {
       //  sh 'docker compose up -d'
       }
     }
-  } // Closing brace for 'stages'
+  } 
   
-} // Closing brace for 'pipeline'
+} 
