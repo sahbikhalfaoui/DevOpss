@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
