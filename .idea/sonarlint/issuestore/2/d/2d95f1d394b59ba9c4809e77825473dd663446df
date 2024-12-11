@@ -1,0 +1,10 @@
+
+k	java:S117O"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ã²¯Ôıÿÿÿÿ
+k	java:S117O"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ã²¯Ôıÿÿÿÿ
+_
+java:S22594"IA "NullPointerException" could be thrown; "participant" is nullable here.(ş ½Ú
+_
+java:S2259%"IA "NullPointerException" could be thrown; "participant" is nullable here.(ş ½Ú
+A
+java:S1168V"+Return an empty collection instead of null.(¥¹ï
+Q	java:S125h"<This block of commented-out lines of code should be removed.(¿úä
