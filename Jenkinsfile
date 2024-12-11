@@ -50,4 +50,12 @@ pipeline {
         sh 'docker compose up -d'
       }
     }
-}
+  } // Closing brace for 'stages'
+  
+  post {
+    always {
+      echo 'Pipeline completed.'
+      // Add any additional post actions if necessary
+    }
+  }
+} // Closing brace for 'pipeline'
