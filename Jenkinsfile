@@ -40,7 +40,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         echo 'Building Docker Image'
-        sh 'docker build -t EventsProject .'
+        sh 'docker build -t eventsProject .'
       }
     }
 
