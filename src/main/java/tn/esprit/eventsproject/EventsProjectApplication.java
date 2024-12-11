@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
+@SpringBootTest(classes = EventServicesImpl.class)    
 public class EventsProjectApplication {
 
     public static void main(String[] args) {
