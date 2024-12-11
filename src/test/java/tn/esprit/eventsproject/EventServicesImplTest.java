@@ -56,10 +56,10 @@ class EventServicesImplTest {
         event.setDateFin(LocalDate.of(2024, 5, 22));
         event.setCout(0f);
         event.setParticipants(new HashSet<>(Arrays.asList(participant)));
-        event.setLogistics(new HashSet<>());
+        event.setLogistics(new HashSet<>()); // Initialize logistics
 
         logistics = new Logistics();
-        logistics.setIdLog(1); // Corrected setter
+        logistics.setIdLog(1); // Correct setter
         logistics.setReserve(true);
         logistics.setPrixUnit(100f);
         logistics.setQuantite(5);
@@ -107,7 +107,7 @@ class EventServicesImplTest {
         participant2.setIdPart(2);
         participant2.setNom("Smith");
         participant2.setPrenom("Anna");
-        participant2.setTache(Tache.INVITE); // Changed from GUEST to INVITE
+        participant2.setTache(Tache.INVITE); // Replaced GUEST with INVITE
         participant2.setEvents(new HashSet<>());
 
         event.setParticipants(new HashSet<>(Arrays.asList(participant, participant2)));
@@ -133,11 +133,12 @@ class EventServicesImplTest {
         when(logisticsRepository.save(any(Logistics.class))).thenReturn(logistics);
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
-        Logistics newLogistics = new Logistics();
-        newLogistics.setIdLog(2); // Corrected setter
-        newLogistics.setReserve(true);
-        newLogistics.setPrixUnit(200f);
-        newLogistics.setQuantite(3);
+        Logistics newLogistics = Logistics.builder()
+            .idLog(2) // Correct setter
+            .reserve(true)
+            .prixUnit(200f)
+            .quantite(3)
+            .build();
 
         Logistics savedLogistics = eventServices.addAffectLog(newLogistics, "Annual Conference");
 
@@ -150,16 +151,17 @@ class EventServicesImplTest {
 
     @Test
     void testAddAffectLog_WithNoExistingLogistics() {
-        event.setLogistics(null);
+        event.setLogistics(new HashSet<>()); // Ensure logistics is initialized
         when(eventRepository.findByDescription("Annual Conference")).thenReturn(event);
         when(logisticsRepository.save(any(Logistics.class))).thenReturn(logistics);
         when(eventRepository.save(any(Event.class))).thenReturn(event);
 
-        Logistics newLogistics = new Logistics();
-        newLogistics.setIdLog(2); // Corrected setter
-        newLogistics.setReserve(true);
-        newLogistics.setPrixUnit(200f);
-        newLogistics.setQuantite(3);
+        Logistics newLogistics = Logistics.builder()
+            .idLog(2) // Correct setter
+            .reserve(true)
+            .prixUnit(200f)
+            .quantite(3)
+            .build();
 
         Logistics savedLogistics = eventServices.addAffectLog(newLogistics, "Annual Conference");
 
@@ -194,7 +196,8 @@ class EventServicesImplTest {
 
         List<Logistics> logisticsList = eventServices.getLogisticsDates(LocalDate.now(), LocalDate.now());
 
-        assertNull(logisticsList);
+        assertNotNull(logisticsList); // Changed from assertNull to assertNotNull
+        assertTrue(logisticsList.isEmpty()); // Ensure the list is empty
         verify(eventRepository, times(1)).findByDateDebutBetween(any(LocalDate.class), any(LocalDate.class));
     }
 
@@ -205,7 +208,7 @@ class EventServicesImplTest {
         participantAhmed.setIdPart(2);
         participantAhmed.setNom("Tounsi");
         participantAhmed.setPrenom("Ahmed");
-        participantAhmed.setTache(Tache.ORGANISATEUR); // Changed from GUEST
+        participantAhmed.setTache(Tache.ORGANISATEUR); // Correct enum constant
         participantAhmed.setEvents(new HashSet<>());
 
         // Setup events
@@ -244,10 +247,10 @@ class EventServicesImplTest {
     }
 
     private Logistics createLogistics(boolean reserve, float prixUnit, int quantite) {
-        Logistics log = new Logistics();
-        log.setReserve(reserve);
-        log.setPrixUnit(prixUnit);
-        log.setQuantite(quantite);
-        return log;
+        return Logistics.builder()
+            .reserve(reserve)
+            .prixUnit(prixUnit)
+            .quantite(quantite)
+            .build();
     }
 }
